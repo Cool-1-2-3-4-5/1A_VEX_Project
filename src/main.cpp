@@ -12,7 +12,7 @@ int main() {
     // int x_pos = 1;
     // int y_pos = 1;
     // drive.PIDmove(0.4, 0.000008, 0.01, 200);
-    drive.bumpMove(200);
+    bool plant_check = drive.bumpMove(200);
     
     // Debug: Confirm bumpMove completed
     Brain.Screen.clearScreen();
@@ -47,4 +47,5 @@ int main() {
     }
 }
 // This PID constants are good
+// To see updates for the code MAKE SURE TO SAVE AND BUILD THE main.spp FILE
 // drive.PIDmove(0.4, 0.000008, 0.01, 200);
