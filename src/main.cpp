@@ -1,8 +1,8 @@
 #include "vex.h"
-// #include <cmath>
+// #include "drivetrain.hpp"
 using namespace vex;
-vex::brain Brain;
-Drivetrain drive(PORT1,PORT6,PORT7);
+brain Brain;
+Drivetrain drive(PORT7,PORT12,PORT10,PORT11);
 
 int main() {
     // wait(1,seconds);
@@ -11,14 +11,17 @@ int main() {
     // int y_grid = 5; 
     // int x_pos = 1;
     // int y_pos = 1;
-    // drive.PIDmove(0.4, 0.000008, 0.01, 200);
-    bool plant_check = drive.bumpMove(200);
+    while(true){
+    drive.pumpMove();
+    // bool plant_check = drive.bumpMove(200);
     
     // Debug: Confirm bumpMove completed
-    Brain.Screen.clearScreen();
-    Brain.Screen.printAt(10, 50, "bumpMove completed!");
-    Brain.Screen.printAt(10, 70, "Main function continuing...");
-    wait(3, seconds);
+    // Brain.Screen.clearScreen();
+    // Brain.Screen.printAt(10, 50, "bumpMove completed!");
+    // Brain.Screen.printAt(10, 70, "Main function continuing...");
+    wait(1, seconds);
+    
+    }
     // if (x_pos==0){
     //     if(angle == 0){
     //         y_pos++;

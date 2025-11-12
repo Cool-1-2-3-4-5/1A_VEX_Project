@@ -2,56 +2,28 @@
 #include "iq2_cpp.h"
 using namespace vex;
 
-class Drivetrain
+class Pump
 {
 private:
-    motor left_;
-    motor right_;
-    inertial BrainInertial;
+    motor pump;
     timer timeout;
-
 public:
-    Drivetrain(char left_Port, char right_Port, char bumper_Port, char pump_Port) : left_(left_Port, false),
-                                                                                    pump(pump_Port, false),
-                                                                                    right_(right_Port, true),
-                                                                                    Bumper9(bumper_Port)
+    Pump(char Port) : pump(Port, false)
     {
-        left_.setStopping(brakeType::hold);
-        right_.setStopping(brakeType::hold);
-        left_.setVelocity(0, percent);
         pump.setVelocity(40, percent);
-        right_.setVelocity(0, percent);
     }
-    void pumpMove()
+    void pumpSpinFor(int sec)
     {
         pump.spin(forward);
     }
-    void IMUcalibrate()
-    {
-        BrainInertial.calibrate();
-        BrainInertial.setRotation(0, degrees);
-        BrainInertial.setHeading(0, degrees);
-    }
     void stop()
     {
-        left_.stop();
-        right_.stop();
+        pump.stop();
     }
-    void PIDmove(float kp, float ki, float kd, float distance)
+    void pumpSpinFor(float kp, float ki, float kd, int sec)
     {
-        distance = distance * (360.0 / 200);
-        left_.setPosition(0, degrees);
-        right_.setPosition(0, degrees);
-        float average_dist = 0;
-        float derivate_difference;
-        float cumerror = 0;
-        bool check = true;
-        float error;
-        float speed;
-        float prev_error = 0;
         timeout.reset();
-        left_.spin(forward);
-        right_.spin(forward);
+        bool check = true;
         while (check)
         {
             average_dist = (left_.position(degrees) + right_.position(degrees)) / 2;
