@@ -5,12 +5,13 @@ brain Brain;
 Drivetrain drive(PORT7,PORT12,PORT10,PORT11);
 
 int main() {
+    //drive.PIDmove(0.4, 0.000008, 0.01, 200);
     // wait(1,seconds);
     // float angle = 0;
     // int x_grid = 5;
     // int y_grid = 5; 
     // int x_pos = 1;
-    // int y_pos = 1;
+    // int y_pos = 1;s
     while(true){
     // bool plant_check = drive.bumpMove(200);
     

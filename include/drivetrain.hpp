@@ -108,6 +108,13 @@ public:
         left_.stop();
         right_.stop();
     }
+
+    bool checkForPlant()
+    {
+        
+
+    }
+
     void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
     {
         int cnt = 0;
