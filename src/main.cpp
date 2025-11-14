@@ -2,10 +2,9 @@
 // #include "drivetrain.hpp"
 using namespace vex;
 brain Brain;
-Drivetrain drive(PORT7,PORT12,PORT10,PORT11);
+Drivetrain drive(PORT7,PORT12);
 
 int main() {
-    //drive.PIDmove(0.4, 0.000008, 0.01, 200);
     // wait(1,seconds);
     // float angle = 0;
     // int x_grid = 5;
@@ -15,6 +14,7 @@ int main() {
     while(true){
     // bool plant_check = drive.bumpMove(200);
     
+    drive.PIDmove(0.4, 0.000008, 0.01, 200);
     // Debug: Confirm bumpMove completed
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(10, 50, "bumpMove completed!");

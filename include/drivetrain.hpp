@@ -115,51 +115,51 @@ public:
 
     }
 
-    void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
-    {
-        int cnt = 0;
-        int colour = 0;
-        int max_row_space = grid_rows;
-        int max_col_space = grid_cols;
-        if (current_x_pos > max_row_space || current_y_pos > max_col_space || current_x_pos < 0 || current_y_pos < 0 || visit_Array[current_x_pos][current_y_pos])
-        {
-        }
-        else
-        {
-            visit_Array[current_x_pos][current_y_pos] = true;
-            int directions_change[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-            for (int i = 0; i < 4; i++)
-            {
-                int new_pos_x = current_x_pos + directions_change[i][0];
-                int new_pos_y = current_y_pos + directions_change[i][1];
-                PIDturn(0.4, 0.000008, 0.01, 90 * i);
-                if (checkForPlant())
-                {
-                    colour = moveToPlant();
-                    grid[new_pos_x][new_pos_y] = colour;
-                    visit_Array[new_pos_x][new_pos_y] = true;
-                }
-                else
-                {
-                    if (new_pos_x < max_row_space && new_pos_y < max_col_space && new_pos_x > 0 && new_pos_y > 0 && !visit_Array[new_pos_x][new_pos_y])
-                    {
-                        posible_movement[cnt][0] = new_pos_x;
-                        posible_movement[cnt][1] = new_pos_y;
-                    }
-                }
-                cnt++;
-            }
-            for (int i = 0; i < cnt; i++)
-            {
-                if (posible_movement[i][0] != NULL)
-                {
-                    int next_cell_x = posible_movement[i][0];
-                    int next_cell_y = posible_movement[i][1];
-                    PIDturn(0.4, 0.000008, 0.01, 90 * i);
-                    PIDmove(0.4, 0.000008, 0.01, 100);
-                    dfs(grid, next_cell_x, next_cell_y,visit_Array,posible_movement);
-                }
-            }
-        }
-    }
+    // void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
+    // {
+    //     int cnt = 0;
+    //     int colour = 0;
+    //     int max_row_space = grid_rows;
+    //     int max_col_space = grid_cols;
+    //     if (current_x_pos > max_row_space || current_y_pos > max_col_space || current_x_pos < 0 || current_y_pos < 0 || visit_Array[current_x_pos][current_y_pos])
+    //     {
+    //     }
+    //     else
+    //     {
+    //         visit_Array[current_x_pos][current_y_pos] = true;
+    //         int directions_change[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    //         for (int i = 0; i < 4; i++)
+    //         {
+    //             int new_pos_x = current_x_pos + directions_change[i][0];
+    //             int new_pos_y = current_y_pos + directions_change[i][1];
+    //             PIDturn(0.4, 0.000008, 0.01, 90 * i);
+    //             if (checkForPlant())
+    //             {
+    //                 colour = moveToPlant();
+    //                 grid[new_pos_x][new_pos_y] = colour;
+    //                 visit_Array[new_pos_x][new_pos_y] = true;
+    //             }
+    //             else
+    //             {
+    //                 if (new_pos_x < max_row_space && new_pos_y < max_col_space && new_pos_x > 0 && new_pos_y > 0 && !visit_Array[new_pos_x][new_pos_y])
+    //                 {
+    //                     posible_movement[cnt][0] = new_pos_x;
+    //                     posible_movement[cnt][1] = new_pos_y;
+    //                 }
+    //             }
+    //             cnt++;
+    //         }
+    //         for (int i = 0; i < cnt; i++)
+    //         {
+    //             if (posible_movement[i][0] != NULL)
+    //             {
+    //                 int next_cell_x = posible_movement[i][0];
+    //                 int next_cell_y = posible_movement[i][1];
+    //                 PIDturn(0.4, 0.000008, 0.01, 90 * i);
+    //                 PIDmove(0.4, 0.000008, 0.01, 100);
+    //                 dfs(grid, next_cell_x, next_cell_y,visit_Array,posible_movement);
+    //             }
+    //         }
+    //     }
+    // }
 };
