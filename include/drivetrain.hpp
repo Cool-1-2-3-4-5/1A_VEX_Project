@@ -118,8 +118,27 @@ public:
         else{
             return false;
         }
-
     }
+
+    int moveToPlant()
+    {
+        int distance_initial = 0
+        int distance_final = 0
+        int distance_togo = 0
+        distance_initial = DistanceSensor.objectDistance(mm)
+        Left_.setPosition(0, turns)
+        Left_.setVelocity(10, percent)
+        Right_.setVelocity(10,percent)
+        Left_.spin(forwards)
+        Right_.spin(forwards)
+        while (DistanceSensor(mm) < 30
+        {}
+        Left_.stop()
+        Right_.stop()
+        distance_final = DistanceSensor.objectDistance(mm)
+        distance_togo = /*STOPPED HERE*/
+    }
+
 
     // void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
     // {
