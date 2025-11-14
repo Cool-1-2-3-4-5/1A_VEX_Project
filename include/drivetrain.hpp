@@ -8,6 +8,7 @@ private:
     motor left_;
     motor right_;
     inertial BrainInertial;
+    distance DistanceSensor;
     timer timeout;
     int grid_rows = 0;
     int grid_cols = 0;
@@ -111,7 +112,13 @@ public:
 
     bool checkForPlant()
     {
-        
+        if(DistanceSensor.objectDistance(mm)  < 120)
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
 
     }
 
