@@ -69,7 +69,6 @@ public:
             {
                 check = false;
             }
-            // wait(20, msec);
         }
         left_.stop();
         right_.stop();
