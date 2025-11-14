@@ -12,7 +12,6 @@ int main() {
     // int x_pos = 1;
     // int y_pos = 1;
     while(true){
-    drive.pumpMove();
     // bool plant_check = drive.bumpMove(200);
     
     // Debug: Confirm bumpMove completed

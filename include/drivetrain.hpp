@@ -12,19 +12,12 @@ private:
 
 public:
     Drivetrain(char left_Port, char right_Port, char bumper_Port, char pump_Port) : left_(left_Port, false),
-                                                                                    pump(pump_Port, false),
-                                                                                    right_(right_Port, true),
-                                                                                    Bumper9(bumper_Port)
+                                                                                    right_(right_Port, true)
     {
         left_.setStopping(brakeType::hold);
         right_.setStopping(brakeType::hold);
         left_.setVelocity(0, percent);
-        pump.setVelocity(40, percent);
         right_.setVelocity(0, percent);
-    }
-    void pumpMove()
-    {
-        pump.spin(forward);
     }
     void IMUcalibrate()
     {
