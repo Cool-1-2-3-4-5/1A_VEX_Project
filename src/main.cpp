@@ -15,7 +15,7 @@ int main() {
     // bool plant_check = drive.bumpMove(200);
     
     // Debug: Confirm bumpMove completed
-    Brain.Screen.clearScreen();
+    Brain.Screen.cearScreen();
     Brain.Screen.printAt(10, 50, "bumpMove completed!");
     Brain.Screen.printAt(10, 70, "Main function continuing...");
     wait(1, seconds);
