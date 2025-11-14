@@ -9,15 +9,21 @@ private:
     motor right_;
     inertial BrainInertial;
     timer timeout;
+    int grid_rows = 0;
+    int grid_cols = 0;
 
 public:
-    Drivetrain(char left_Port, char right_Port, char bumper_Port, char pump_Port) : left_(left_Port, false),
-                                                                                    right_(right_Port, true)
+    Drivetrain(char left_Port, char right_Port) : left_(left_Port, false), right_(right_Port, true)
     {
         left_.setStopping(brakeType::hold);
         right_.setStopping(brakeType::hold);
         left_.setVelocity(0, percent);
         right_.setVelocity(0, percent);
+    }
+    void setGrid(int x = 4, int y = 4)
+    {
+        grid_rows = x;
+        grid_cols = y;
     }
     void IMUcalibrate()
     {
@@ -102,42 +108,89 @@ public:
         left_.stop();
         right_.stop();
     }
+    void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
+    {
+        int cnt = 0;
+        int colour = 0;
+        int max_row_space = grid_rows;
+        int max_col_space = grid_cols;
+        if (current_x_pos > max_row_space || current_y_pos > max_col_space || current_x_pos < 0 || current_y_pos < 0 || visit_Array[current_x_pos][current_y_pos])
+        {
+        }
+        else
+        {
+            visit_Array[current_x_pos][current_y_pos] = true;
+            int directions_change[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+            for (int i = 0; i < 4; i++)
+            {
+                int new_pos_x = current_x_pos + directions_change[i][0];
+                int new_pos_y = current_y_pos + directions_change[i][1];
+                PIDturn(0.4, 0.000008, 0.01, 90 * i);
+                if (checkForPlant())
+                {
+                    colour = moveToPlant();
+                    grid[new_pos_x][new_pos_y] = colour;
+                    visit_Array[new_pos_x][new_pos_y] = true;
+                }
+                else
+                {
+                    if (new_pos_x < max_row_space && new_pos_y < max_col_space && new_pos_x > 0 && new_pos_y > 0 && !visit_Array[new_pos_x][new_pos_y])
+                    {
+                        posible_movement[cnt][0] = new_pos_x;
+                        posible_movement[cnt][1] = new_pos_y;
+                    }
+                }
+                cnt++;
+            }
+            for (int i = 0; i < cnt; i++)
+            {
+                if (posible_movement[i][0] != NULL)
+                {
+                    int next_cell_x = posible_movement[i][0];
+                    int next_cell_y = posible_movement[i][1];
+                    PIDturn(0.4, 0.000008, 0.01, 90 * i);
+                    PIDmove(0.4, 0.000008, 0.01, 100);
+                    dfs(grid, next_cell_x, next_cell_y,visit_Array,posible_movement);
+                }
+            }
+        }
+    }
 };
 
-    // bool bumpMove(float dist_to_middle)
-    // {
-    //     Brain.Screen.clearScreen();
-    //     left_.setPosition(0, degrees);
-    //     right_.setPosition(0, degrees);
-    //     const float tolerance = 9;
-    //     float current_distance = 0;
-    //     float difference = 0;
-    //     left_.setVelocity(50, percent);
-    //     right_.setVelocity(50, percent);
-    //     left_.spin(forward);
-    //     right_.spin(forward);
-    //     while ((!Bumper9.pressing()) && (((left_.position(degrees) + right_.position(degrees)) / 2.0) * (200.0 / 360)) < dist_to_middle)
-    //     {
-    //     left_.stop();
-    //     right_.stop();
-    //     current_distance = ((left_.position(degrees) + right_.position(degrees)) / 2.0) * (200.0 / 360);
-    //     Brain.Screen.clearScreen();
-    //     wait(2, sec);
-    //     Brain.Screen.clearScreen();
-    //     difference = current_distance - dist_to_middle;
-    //     if (difference < 0)
-    //     {
-    //         difference = -difference;
-    //     }
-    //     if (difference <= tolerance)
-    //     {
-    //         return false;
-    //     }
-    //     else
-    //     {
-    //         PIDmove(0.4, 0.000008, 0.01, -1 * current_distance);
-    //         return true;
-    //     }
+// bool bumpMove(float dist_to_middle)
+// {
+//     Brain.Screen.clearScreen();
+//     left_.setPosition(0, degrees);
+//     right_.setPosition(0, degrees);
+//     const float tolerance = 9;
+//     float current_distance = 0;
+//     float difference = 0;
+//     left_.setVelocity(50, percent);
+//     right_.setVelocity(50, percent);
+//     left_.spin(forward);
+//     right_.spin(forward);
+//     while ((!Bumper9.pressing()) && (((left_.position(degrees) + right_.position(degrees)) / 2.0) * (200.0 / 360)) < dist_to_middle)
+//     {
+//     left_.stop();
+//     right_.stop();
+//     current_distance = ((left_.position(degrees) + right_.position(degrees)) / 2.0) * (200.0 / 360);
+//     Brain.Screen.clearScreen();
+//     wait(2, sec);
+//     Brain.Screen.clearScreen();
+//     difference = current_distance - dist_to_middle;
+//     if (difference < 0)
+//     {
+//         difference = -difference;
+//     }
+//     if (difference <= tolerance)
+//     {
+//         return false;
+//     }
+//     else
+//     {
+//         PIDmove(0.4, 0.000008, 0.01, -1 * current_distance);
+//         return true;
+//     }
 
-    //     wait(3, sec); // Keep results visible longer
-    // }
+//     wait(3, sec); // Keep results visible longer
+// }
