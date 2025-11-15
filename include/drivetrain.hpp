@@ -149,6 +149,7 @@ public:
 
     void move()
     {
+<<<<<<< HEAD
         right_.setVelocity(100,percent);
         right_.spin(forward);
     }
@@ -158,6 +159,27 @@ public:
         {}
         while (TouchSensor.pressing() = 1)
         {}
+=======
+        int distance_initial = 0;
+        int distance_final = 0;
+        int distance_togo = 0;
+        string color_ind = " ";
+        int colour_ind = 0;
+        distance_initial = DistanceSensor.objectDistance(mm);
+        Left_.setPosition(0, turns);
+        Left_.setVelocity(10, percent);
+        Right_.setVelocity(10,percent);
+        Left_.spin(forwards);
+        Right_.spin(forwards);
+        while (DistanceSensor(mm) < 30;
+        {}
+        Left_.stop();
+        Right_.stop();
+        distance_final = DistanceSensor.objectDistance(mm);
+        distance_togo = distance_initial - distance_final;
+        if (colour
+        
+>>>>>>> 361e9c9384259890134860ab4083af20e295f836
     }
 
     // void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
