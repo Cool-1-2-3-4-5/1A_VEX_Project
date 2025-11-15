@@ -111,6 +111,7 @@ public:
         right_.stop();
     }
 
+<<<<<<< HEAD
     // bool checkForPlant()
     // {
     //     if(DistanceSensor.objectDistance(mm)  < 120)
@@ -121,6 +122,19 @@ public:
     //         return false;
     //     }
     // }
+=======
+    bool checkForPlant()
+    {
+        if (DistanceSensor.objectDistance(mm) < 120)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+>>>>>>> ea23f0a5f3235c1653658adda22c825d054cea7a
 
      int moveToPlant()
      {
@@ -168,7 +182,7 @@ public:
         distance_initial = DistanceSensor.objectDistance(mm);
         Left_.setPosition(0, turns);
         Left_.setVelocity(10, percent);
-        Right_.setVelocity(10,percent);
+        Right_.setVelocity(10, percent);
         Left_.spin(forwards);
         Right_.spin(forwards);
         while (DistanceSensor(mm) < 30;
@@ -178,8 +192,11 @@ public:
         distance_final = DistanceSensor.objectDistance(mm);
         distance_togo = distance_initial - distance_final;
         if (colour
+<<<<<<< HEAD
         
 >>>>>>> 361e9c9384259890134860ab4083af20e295f836
+=======
+>>>>>>> ea23f0a5f3235c1653658adda22c825d054cea7a
     }
 
     // void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
