@@ -2,7 +2,7 @@
 // #include "drivetrain.hpp"
 using namespace vex;
 brain Brain;
-Drivetrain drive(PORT7,PORT12);
+Drivetrain drive(PORT7,PORT12, PORT8, PORT9, PORT10);
 
 int main() {
     // ELIL COMMITED
@@ -13,42 +13,15 @@ int main() {
     // int x_pos = 1;
     // int y_pos = 1;s
     // MY NAME IS BEN
-    while(true){
-    // bool plant_check = drive.bumpMove(200);
-    drive.move();
-    // while(1)
-    // {}
-    // drive.PIDmove(0.4, 0.000008, 0.01, 200);
-    // Debug: Confirm bumpMove completed
-    Brain.Screen.clearScreen();
-    Brain.Screen.printAt(10, 50, "bumpMove completed!");
-    Brain.Screen.printAt(10, 70, "Main function continuing...");
-    wait(1, seconds);
-    
-    }
-    // if (x_pos==0){
-    //     if(angle == 0){
-    //         y_pos++;
-    //         //append x_pos,y_pos to array
-    //         y_pos--;
-    //     }
-    //     else if(angle == 90){
-    //         x_pos++;
-    //         //append x_pos,y_pos to array
-    //         x_pos--;
-    //     }
-    //     else if(angle == 180){
-    //         y_pos--;
-    //         //append x_pos,y_pos to array
-    //         y_pos++;
-    //     }
-    //     else{
-    //         x_pos--;
-    //         //append x_pos,y_pos to array
-    //         x_pos++;
-    //     }
-    // }
-    // Brain.programStop();
+    drive.IMUcalibrate();
+    drive.PIDturn(90);  // Then turn
+    drive.stop();
+    drive.PIDturn(180);  // Then turn
+    drive.stop();
+    drive.PIDturn(270);  // Then turn
+    drive.stop();
+    drive.PIDturn(180);  // Then turn
+    drive.stop();
     while(1) {
         this_thread::sleep_for(10);
     }

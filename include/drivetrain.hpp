@@ -1,5 +1,6 @@
 #pragma once
 #include "iq2_cpp.h"
+// #include <string>
 using namespace vex;
 
 class Drivetrain
@@ -8,6 +9,7 @@ private:
     motor left_;
     motor right_;
     inertial BrainInertial;
+    brain Brain;
     distance DistanceSensor;
     colorsensor ColourSensor;
     touchled TouchSensor;
@@ -16,12 +18,13 @@ private:
     int grid_cols = 0;
 
 public:
-    Drivetrain(char left_Port, char right_Port) : left_(left_Port, false), right_(right_Port, true)
+    Drivetrain(char left_Port, char right_Port, char distanceSensor_port, char colourSensor_port, char touchSensor_port) : left_(left_Port, false), right_(right_Port, true),DistanceSensor(distanceSensor_port),ColourSensor(colourSensor_port), TouchSensor(touchSensor_port)
     {
         left_.setStopping(brakeType::hold);
         right_.setStopping(brakeType::hold);
         left_.setVelocity(0, percent);
         right_.setVelocity(0, percent);
+        BrainInertial.calibrate();
     }
     void setGrid(int x = 4, int y = 4)
     {
@@ -33,13 +36,14 @@ public:
         BrainInertial.calibrate();
         BrainInertial.setRotation(0, degrees);
         BrainInertial.setHeading(0, degrees);
+        wait(3,seconds);
     }
     void stop()
     {
         left_.stop();
         right_.stop();
     }
-    void PIDmove(float kp, float ki, float kd, float distance)
+    void PIDmove(float distance, float kp = 0.4, float ki =  0.000008, float kd = 0.01)
     {
         distance = distance * (360.0 / 200);
         left_.setPosition(0, degrees);
@@ -75,7 +79,7 @@ public:
         left_.stop();
         right_.stop();
     }
-    void PIDturn(float kp, float ki, float kd, float angle, float current_angle)
+    void PIDturn(float angle, float kp = 0.4, float ki = 0.000026, float kd = 0.01)
     {
         float average_dist = 0;
         float derivate_difference;
@@ -88,11 +92,21 @@ public:
         left_.spin(forward);
         right_.spin(forward);
         int changer = 1;
+        int convert = 1;
+        // if(angle > 180){
+        //     angle -= 360;
+        // }
+        if(BrainInertial.rotation() < 0){
+            convert = 1;
+        }
+        if ((BrainInertial.rotation() - angle) < ((BrainInertial.rotation()) + angle))
+        {
+            changer = -1;
+        }
         while (check)
         {
-            average_dist = (left_.position(degrees) + right_.position(degrees)) / 2;
             // potential
-            error = angle - average_dist;
+            error = angle - (convert * BrainInertial.rotation());
             // integral
             cumerror += error;
             // derivative
@@ -101,28 +115,17 @@ public:
             left_.setVelocity(-1 * speed * changer, percent);
             right_.setVelocity(speed * changer, percent);
             prev_error = error;
-            if (timeout.time(sec) > 3.0)
+            if (timeout.time(sec) > 4.0)
             {
                 check = false;
             }
-            // wait(20, msec);
+            Brain.Screen.printAt(10, 50, "Rotation: %.1f", BrainInertial.rotation());
+            Brain.Screen.printAt(10, 70, "Target: %.1f", angle);
+            Brain.Screen.printAt(10, 90, "Error: %.1f", error);
         }
         left_.stop();
         right_.stop();
     }
-
-<<<<<<< HEAD
-    // bool checkForPlant()
-    // {
-    //     if(DistanceSensor.objectDistance(mm)  < 120)
-    //     {
-    //         return true;
-    //     }
-    //     else{
-    //         return false;
-    //     }
-    // }
-=======
     bool checkForPlant()
     {
         if (DistanceSensor.objectDistance(mm) < 120)
@@ -134,70 +137,58 @@ public:
             return false;
         }
     }
->>>>>>> ea23f0a5f3235c1653658adda22c825d054cea7a
-
-     int moveToPlant()
-     {
+    int moveToPlant()
+    {
+        int colourVal = 0;
         int distance_initial = 0;
         distance_initial = DistanceSensor.objectDistance(mm);
         PIDmove(0.4, 0.000008, 0.01, distance_initial - 25);
-        if (ColourSensor == orange)
+        if (ColourSensor.color() == orange)
         {
             colourVal = 1;
         }
-        if (ColourSensor == green)
+        if (ColourSensor.color() == green)
         {
             colourVal = 2;
         }
-        if (ColourSensor == yellow)
+        if (ColourSensor.color() == yellow)
         {
             colourVal = 3;
         }
-        if (ColourSensor == violet)
+        if (ColourSensor.color() == violet)
         {
             colourVal = 4;
         }
         PIDmove(0.4, 0.000008, 0.01, -distance_initial + 25);
         return colourVal;
-     }
-
-    void move()
-    {
-<<<<<<< HEAD
-        right_.setVelocity(100,percent);
-        right_.spin(forward);
     }
-    void touchandgo ()
-    {
-        while (TouchSensor.pressing() = 0)
-        {}
-        while (TouchSensor.pressing() = 1)
-        {}
-=======
-        int distance_initial = 0;
-        int distance_final = 0;
-        int distance_togo = 0;
-        string color_ind = " ";
-        int colour_ind = 0;
-        distance_initial = DistanceSensor.objectDistance(mm);
-        Left_.setPosition(0, turns);
-        Left_.setVelocity(10, percent);
-        Right_.setVelocity(10, percent);
-        Left_.spin(forwards);
-        Right_.spin(forwards);
-        while (DistanceSensor(mm) < 30;
-        {}
-        Left_.stop();
-        Right_.stop();
-        distance_final = DistanceSensor.objectDistance(mm);
-        distance_togo = distance_initial - distance_final;
-        if (colour
-<<<<<<< HEAD
-        
->>>>>>> 361e9c9384259890134860ab4083af20e295f836
-=======
->>>>>>> ea23f0a5f3235c1653658adda22c825d054cea7a
-    }
+    // void touchAndGo()
+    // {
+    //     while (!TouchSensor.pressing())
+    //     {
+    //     }
+    //     while (TouchSensor.pressing())
+    //     {
+    //     }
+    //     int distance_initial = 0;
+    //     int distance_final = 0;
+    //     int distance_togo = 0;
+    //     string color_ind = " ";
+    //     int colour_ind = 0;
+    //     distance_initial = DistanceSensor.objectDistance(mm);
+    //     Left_.setPosition(0, turns);
+    //     Left_.setVelocity(10, percent);
+    //     Right_.setVelocity(10, percent);
+    //     Left_.spin(forwards);
+    //     Right_.spin(forwards);
+    //     while (DistanceSensor(mm) < 30;
+    //     {}
+    //     Left_.stop();
+    //     Right_.stop();
+    //     distance_final = DistanceSensor.objectDistance(mm);
+    //     distance_togo = distance_initial - distance_final;
+    //     if (colour
+    // }
 
     // void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
     // {
