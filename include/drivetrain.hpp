@@ -111,11 +111,12 @@ public:
 
     bool checkForPlant()
     {
-        if(DistanceSensor.objectDistance(mm)  < 120)
+        if (DistanceSensor.objectDistance(mm) < 120)
         {
             return true;
         }
-        else{
+        else
+        {
             return false;
         }
     }
@@ -130,7 +131,7 @@ public:
         distance_initial = DistanceSensor.objectDistance(mm);
         Left_.setPosition(0, turns);
         Left_.setVelocity(10, percent);
-        Right_.setVelocity(10,percent);
+        Right_.setVelocity(10, percent);
         Left_.spin(forwards);
         Right_.spin(forwards);
         while (DistanceSensor(mm) < 30;
@@ -140,9 +141,7 @@ public:
         distance_final = DistanceSensor.objectDistance(mm);
         distance_togo = distance_initial - distance_final;
         if (colour
-        
     }
-
 
     // void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
     // {
