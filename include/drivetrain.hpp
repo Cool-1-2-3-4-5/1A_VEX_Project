@@ -122,21 +122,25 @@ public:
 
     int moveToPlant()
     {
-        int distance_initial = 0
-        int distance_final = 0
-        int distance_togo = 0
-        distance_initial = DistanceSensor.objectDistance(mm)
-        Left_.setPosition(0, turns)
-        Left_.setVelocity(10, percent)
-        Right_.setVelocity(10,percent)
-        Left_.spin(forwards)
-        Right_.spin(forwards)
-        while (DistanceSensor(mm) < 30
+        int distance_initial = 0;
+        int distance_final = 0;
+        int distance_togo = 0;
+        string color_ind = " ";
+        int colour_ind = 0;
+        distance_initial = DistanceSensor.objectDistance(mm);
+        Left_.setPosition(0, turns);
+        Left_.setVelocity(10, percent);
+        Right_.setVelocity(10,percent);
+        Left_.spin(forwards);
+        Right_.spin(forwards);
+        while (DistanceSensor(mm) < 30;
         {}
-        Left_.stop()
-        Right_.stop()
-        distance_final = DistanceSensor.objectDistance(mm)
-        distance_togo = /*STOPPED HERE*/
+        Left_.stop();
+        Right_.stop();
+        distance_final = DistanceSensor.objectDistance(mm);
+        distance_togo = distance_initial - distance_final;
+        if (colour
+        
     }
 
 
