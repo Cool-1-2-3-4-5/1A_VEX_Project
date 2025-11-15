@@ -15,8 +15,10 @@ int main() {
     // MY NAME IS BEN
     while(true){
     // bool plant_check = drive.bumpMove(200);
-    
-    drive.PIDmove(0.4, 0.000008, 0.01, 200);
+    drive.move();
+    // while(1)
+    // {}
+    // drive.PIDmove(0.4, 0.000008, 0.01, 200);
     // Debug: Confirm bumpMove completed
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(10, 50, "bumpMove completed!");

@@ -9,6 +9,8 @@ private:
     motor right_;
     inertial BrainInertial;
     distance DistanceSensor;
+    colorsensor ColourSensor;
+    touchled TouchSensor;
     timer timeout;
     int grid_rows = 0;
     int grid_cols = 0;
@@ -109,36 +111,54 @@ public:
         right_.stop();
     }
 
-    bool checkForPlant()
-    {
-        if(DistanceSensor.objectDistance(mm)  < 120)
+    // bool checkForPlant()
+    // {
+    //     if(DistanceSensor.objectDistance(mm)  < 120)
+    //     {
+    //         return true;
+    //     }
+    //     else{
+    //         return false;
+    //     }
+    // }
+
+     int moveToPlant()
+     {
+        int distance_initial = 0;
+        distance_initial = DistanceSensor.objectDistance(mm);
+        PIDmove(0.4, 0.000008, 0.01, distance_initial - 25);
+        if (ColourSensor == orange)
         {
-            return true;
+            colourVal = 1;
         }
-        else{
-            return false;
+        if (ColourSensor == green)
+        {
+            colourVal = 2;
         }
-    }
+        if (ColourSensor == yellow)
+        {
+            colourVal = 3;
+        }
+        if (ColourSensor == violet)
+        {
+            colourVal = 4;
+        }
+        PIDmove(0.4, 0.000008, 0.01, -distance_initial + 25);
+        return colourVal;
+     }
 
-    int moveToPlant()
+    void move()
     {
-        int distance_initial = 0
-        int distance_final = 0
-        int distance_togo = 0
-        distance_initial = DistanceSensor.objectDistance(mm)
-        Left_.setPosition(0, turns)
-        Left_.setVelocity(10, percent)
-        Right_.setVelocity(10,percent)
-        Left_.spin(forwards)
-        Right_.spin(forwards)
-        while (DistanceSensor(mm) < 30
-        {}
-        Left_.stop()
-        Right_.stop()
-        distance_final = DistanceSensor.objectDistance(mm)
-        distance_togo = /*STOPPED HERE*/
+        right_.setVelocity(100,percent);
+        right_.spin(forward);
     }
-
+    void touchandgo ()
+    {
+        while (TouchSensor.pressing() = 0)
+        {}
+        while (TouchSensor.pressing() = 1)
+        {}
+    }
 
     // void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
     // {
