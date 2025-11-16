@@ -242,7 +242,7 @@ public:
     //     if (colour
     // }
 
-    void dfs(int grid[][3], int current_x_pos, int current_y_pos, bool visit_Array[][3])
+    void dfs(int grid[][3], int& current_x_pos, int& current_y_pos, bool visit_Array[][3])
     {
         // Check if current position is out of bounds or already visited
         if (current_x_pos < 0 || current_x_pos >= grid_rows || current_y_pos < 0 || current_y_pos >= grid_cols || visit_Array[current_x_pos][current_y_pos])
@@ -413,6 +413,92 @@ public:
 //         left_.stop();
 //         right_.stop();
 //     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 // safety2:
