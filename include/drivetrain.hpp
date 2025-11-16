@@ -25,6 +25,7 @@ public:
         left_.setVelocity(0, percent);
         right_.setVelocity(0, percent);
         BrainInertial.calibrate();
+        ColourSensor.brightness(100);
     }
     void setGrid(int x = 4, int y = 4)
     {
@@ -43,9 +44,16 @@ public:
         left_.stop();
         right_.stop();
     }
-    void PIDmove(float distance, float kp = 0.4, float ki =  0, float kd = 0.01)
+    
+    void move()
     {
-        distance = distance * (360.0 / 200);
+        right_.setVelocity(100,percent);
+        left_.setVelocity(100,percent);
+        left_.spin(forward);
+        right_.spin(forward);
+    }
+    void PIDmove(float distance, float kp = 0.3, float ki =  0.000016, float kd = 0.01)
+    {
         left_.setPosition(0, degrees);
         right_.setPosition(0, degrees);
         float average_dist = 0;
@@ -80,7 +88,7 @@ public:
         left_.stop();
         right_.stop();
     }
-    void PIDturn(float angle, float kp = 0.4, float ki = 0.00007, float kd = 0.01)
+    void PIDturn(float angle, float kp = 0.4, float ki = 0.00000035, float kd = 0.01)
     {
         float average_dist = 0;
         float derivate_difference;
@@ -92,7 +100,7 @@ public:
         timeout.reset();
         left_.spin(forward);
         right_.spin(forward);
-        if(angle >= 180){
+        if(angle > 180){
             angle = angle -360;
         }
         while (check)
@@ -117,7 +125,10 @@ public:
     }
     bool checkForPlant()
     {
-        if (DistanceSensor.objectDistance(mm) < 100)
+        
+        Brain.Screen.printAt(10, 50, "DisPlant: %.1f", DistanceSensor.objectDistance(mm));
+        wait(1,seconds);
+        if (DistanceSensor.objectDistance(mm) < 200)
         {
             return true;
         }
@@ -126,7 +137,7 @@ public:
             return false;
         }
     }
-    void moveToPlant()
+    int moveToPlant()
     {
         int colourVal = 0;
         float distance_initial = 0;
@@ -134,29 +145,30 @@ public:
             Brain.Screen.printAt(10, 50, "RUN: %.1f", DistanceSensor.objectDistance(mm));
         }
         distance_initial = DistanceSensor.objectDistance(mm);
-        distance_initial =  distance_initial - 400.0;
+        distance_initial =  distance_initial - 50.0;
         Brain.Screen.printAt(10, 50, "final: %.1f", distance_initial);
-        wait(3,seconds);
+        timeout.reset();
         PIDmove(distance_initial);
-        wait(3,seconds);
-        // if (ColourSensor.color() == orange)
-        // {
-        //     colourVal = 1;
-        // }
-        // else if (ColourSensor.color() == green)
-        // {
-        //     colourVal = 2;
-        // }
-        // else if (ColourSensor.color() == yellow)
-        // {
-        //     colourVal = 3;
-        // }
-        // else if (ColourSensor.color() == violet)
-        // {
-        //     colourVal = 4;
-        // }
-        // return colourVal;
-        // PIDmove(-304);
+        if (ColourSensor.color() == cyan)
+        {
+            colourVal = 1;
+        }
+        else if (ColourSensor.color() == green)
+        {
+            colourVal = 2;
+        }
+        else if (ColourSensor.color() == yellow)
+        {
+            colourVal = 3;
+        }
+        else if (ColourSensor.color() == violet)
+        {
+            colourVal = 4;
+        }
+        wait(1,seconds);
+        PIDmove(-1*distance_initial);
+        wait(1,seconds);
+        return colourVal;
     }
     // void touchAndGo()
     // {
@@ -186,58 +198,119 @@ public:
     //     if (colour
     // }
 
-    void dfs(int grid[][4], int& current_x_pos, int& current_y_pos, bool visit_Array[][4], int posible_movement[][2])
+    void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4])
     {
-        int cnt = 0;
-        int colour = 0;
-        int max_row_space = grid_rows;
-        int max_col_space = grid_cols;
-        if (current_x_pos > max_row_space || current_y_pos > max_col_space || current_x_pos < 0 || current_y_pos < 0 || visit_Array[current_x_pos][current_y_pos])
+        // Check if current position is out of bounds or already visited
+        if (current_x_pos < 0 || current_x_pos >= grid_rows || current_y_pos < 0 || current_y_pos >= grid_cols || visit_Array[current_x_pos][current_y_pos])
         {
+            return;
         }
-        else
+        
+        // Mark current position as visited
+        visit_Array[current_x_pos][current_y_pos] = true;
+        
+        // Define directions: Up, Right, Down, Left
+        // [0][0] is top-left corner
+        // Up: y-1, Right: x+1, Down: y+1, Left: x-1
+        int directions_change[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+        int posible_movement[4][2] = {};
+        int cnt = 0;
+        
+        // Check all 4 directions
+        for (int i = 0; i < 4; i++)
         {
-            visit_Array[current_x_pos][current_y_pos] = true;
-            int directions_change[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-            for (int i = 0; i < 4; i++)
+            int new_pos_x = current_x_pos + directions_change[i][0];
+            int new_pos_y = current_y_pos + directions_change[i][1];
+            
+            Brain.Screen.clearScreen();
+            Brain.Screen.printAt(10, 30, "Checking dir %d", i);
+            Brain.Screen.printAt(10, 50, "From [%d][%d]", current_x_pos, current_y_pos);
+            Brain.Screen.printAt(10, 70, "To [%d][%d]", new_pos_x, new_pos_y);
+            wait(2, seconds);
+            
+            // Check if position is valid before turning and checking
+            if (new_pos_x < 0 || new_pos_x >= grid_rows || new_pos_y < 0 || new_pos_y >= grid_cols)
             {
-                int new_pos_x = current_x_pos + directions_change[i][0];
-                int new_pos_y = current_y_pos + directions_change[i][1];
-                Brain.Screen.printAt(10, 50, "cnt: %.1f", i);
-                wait(1,seconds);
                 Brain.Screen.clearScreen();
-                PIDturn(90 * i);
-                if (checkForPlant())
+                Brain.Screen.printAt(10, 50, "Out of bounds:");
+                Brain.Screen.printAt(10, 70, "[%d][%d]", new_pos_x, new_pos_y);
+                wait(2, seconds);
+                continue; // Skip this direction
+            }
+            
+            if (visit_Array[new_pos_x][new_pos_y])
+            {
+                Brain.Screen.clearScreen();
+                Brain.Screen.printAt(10, 50, "Already visited:");
+                Brain.Screen.printAt(10, 70, "[%d][%d]", new_pos_x, new_pos_y);
+                wait(2, seconds);
+                continue; // Skip this direction
+            }
+            
+            // Turn to face direction i (0=up, 1=right, 2=down, 3=left)
+            PIDturn(90 * i);
+            wait(0.5, seconds);
+            
+            // Check if there's a plant in this direction
+            if (checkForPlant())
+            {
+                // Plant detected - move to it, get color, move back
+                int colour = moveToPlant();
+                
+                // Store color in grid if position is valid
+                if (new_pos_x >= 0 && new_pos_x < grid_rows && new_pos_y >= 0 && new_pos_y < grid_cols)
                 {
-                    Brain.Screen.printAt(10, 70, "plant:");
-                    wait(1,seconds);
-                    Brain.Screen.clearScreen();
-                // Brain.Screen.printAt(10, 90, "Error: %.1f", error);
-                    // colour = moveToPlant();
                     grid[new_pos_x][new_pos_y] = colour;
                     visit_Array[new_pos_x][new_pos_y] = true;
+                    Brain.Screen.printAt(10, 70, "Plant at [%d][%d]: %d", new_pos_x, new_pos_y, colour);
+                    wait(1, seconds);
+                    Brain.Screen.clearScreen();
                 }
-                else
-                {
-                    if (new_pos_x < max_row_space && new_pos_y < max_col_space && new_pos_x > 0 && new_pos_y > 0 && !visit_Array[new_pos_x][new_pos_y])
-                    {
-                        posible_movement[cnt][0] = new_pos_x;
-                        posible_movement[cnt][1] = new_pos_y;
-                    }
-                }
+            }
+            else
+            {
+                // No plant - this is an empty cell, add to possible movements
+                posible_movement[cnt][0] = new_pos_x;
+                posible_movement[cnt][1] = new_pos_y;
+                Brain.Screen.clearScreen();
+                Brain.Screen.printAt(10, 50, "Possible move %d:", cnt);
+                Brain.Screen.printAt(10, 70, "[%d][%d]", new_pos_x, new_pos_y);
+                wait(2, seconds);
                 cnt++;
             }
-            for (int i = 0; i < cnt; i++)
-            {
-                if (posible_movement[i][0] != 10)
-                {
-                    int next_cell_x = posible_movement[i][0];
-                    int next_cell_y = posible_movement[i][1];
-                    PIDturn(90 * i);
-                    PIDmove(100);
-                    dfs(grid, next_cell_x, next_cell_y,visit_Array,posible_movement);
-                }
-            }
+        }
+        
+        // Now visit all possible empty cells (DFS recursion)
+        for (int i = 0; i < cnt; i++)
+        {
+            int next_cell_x = posible_movement[i][0];
+            int next_cell_y = posible_movement[i][1];
+            
+            // Calculate which direction to turn to face the next cell
+            int dx = next_cell_x - current_x_pos;
+            int dy = next_cell_y - current_y_pos;
+            int direction = 0;
+            if (dy == -1) direction = 0;      // Up
+            else if (dx == 1) direction = 1;  // Right
+            else if (dy == 1) direction = 2;  // Down
+            else if (dx == -1) direction = 3; // Left
+            
+            // Turn to face the direction and move to next cell
+            PIDturn(90 * direction);
+            wait(0.5, seconds);
+            PIDmove(300); // Move 100mm to next cell
+            wait(0.5, seconds);
+            
+            // Recursively explore from new position
+            dfs(grid, next_cell_x, next_cell_y, visit_Array);
+            
+            // Backtrack: turn around, move back, turn around again
+            PIDturn(90 * ((direction + 2) % 4)); // Turn 180 degrees
+            wait(0.5, seconds);
+            PIDmove(100); // Move back
+            wait(0.5, seconds);
+            PIDturn(90 * direction); // Face original direction
+            wait(0.5, seconds);
         }
     }
 };
