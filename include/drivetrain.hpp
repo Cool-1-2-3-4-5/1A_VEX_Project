@@ -11,6 +11,7 @@ private:
     distance DistanceSensor;
     colorsensor ColourSensor;
     touchled TouchSensor;
+    motor_group PumpMotor; // Check this is right 
     timer timeout;
     int grid_rows = 0;
     int grid_cols = 0;
@@ -160,7 +161,38 @@ public:
         PIDmove(0.4, 0.000008, 0.01, -distance_initial + 25);
         return colourVal;
      }
-
+    int colourtotime (int colourValue)
+    int timetowater = 0;
+    {
+        if (colourValue == 1)
+        {
+            time = 3;
+        }
+        if (colourValue == 2)
+        {
+            time = 6;
+        }
+        if (colourValue == 3)
+        {
+            time = 9;
+        }
+        if (colourValue == 4)
+        {
+            time = 11;
+        }
+        return time;
+    }
+    
+    void pourwater (int time)
+    {
+        int adjustment = 1 // change adjustment upon testing
+        timeout.reset()
+        PumpMotor.spin(forwards)
+        while (timeout.value() < time*adjustment)
+        {}
+        PumpMotor.stop()
+    }
+    
     void move()
     {
 <<<<<<< HEAD
@@ -173,25 +205,9 @@ public:
         {}
         while (TouchSensor.pressing() = 1)
         {}
+    }
 =======
-        int distance_initial = 0;
-        int distance_final = 0;
-        int distance_togo = 0;
-        string color_ind = " ";
-        int colour_ind = 0;
-        distance_initial = DistanceSensor.objectDistance(mm);
-        Left_.setPosition(0, turns);
-        Left_.setVelocity(10, percent);
-        Right_.setVelocity(10, percent);
-        Left_.spin(forwards);
-        Right_.spin(forwards);
-        while (DistanceSensor(mm) < 30;
-        {}
-        Left_.stop();
-        Right_.stop();
-        distance_final = DistanceSensor.objectDistance(mm);
-        distance_togo = distance_initial - distance_final;
-        if (colour
+       //
 <<<<<<< HEAD
         
 >>>>>>> 361e9c9384259890134860ab4083af20e295f836
