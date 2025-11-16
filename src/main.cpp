@@ -2,7 +2,7 @@
 // #include "drivetrain.hpp"
 using namespace vex;
 brain Brain;
-Drivetrain drive(PORT7,PORT12);
+Drivetrain drive(PORT7,PORT12, PORT1,PORT8,PORT9);
 
 int main() {
     // ELIL COMMITED
