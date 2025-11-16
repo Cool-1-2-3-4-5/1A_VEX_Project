@@ -43,7 +43,7 @@ public:
         left_.stop();
         right_.stop();
     }
-    void PIDmove(float distance, float kp = 0.4, float ki =  0.000008, float kd = 0.01)
+    void PIDmove(float distance, float kp = 0.4, float ki =  0, float kd = 0.01)
     {
         distance = distance * (360.0 / 200);
         left_.setPosition(0, degrees);
@@ -52,7 +52,7 @@ public:
         float derivate_difference;
         float cumerror = 0;
         bool check = true;
-        float error;
+        float error = 0;
         float speed;
         float prev_error = 0;
         timeout.reset();
@@ -60,7 +60,8 @@ public:
         right_.spin(forward);
         while (check)
         {
-            average_dist = (left_.position(degrees) + right_.position(degrees)) / 2;
+            average_dist = ((left_.position(degrees) + right_.position(degrees)) / 2) * 200.0/360;
+            Brain.Screen.printAt(10, 50, "dist: %.1f", error);
             // potential
             error = distance - average_dist;
             // integral
@@ -79,7 +80,7 @@ public:
         left_.stop();
         right_.stop();
     }
-    void PIDturn(float angle, float kp = 0.4, float ki = 0.000026, float kd = 0.01)
+    void PIDturn(float angle, float kp = 0.4, float ki = 0.00007, float kd = 0.01)
     {
         float average_dist = 0;
         float derivate_difference;
@@ -91,44 +92,32 @@ public:
         timeout.reset();
         left_.spin(forward);
         right_.spin(forward);
-        int changer = 1;
-        int convert = 1;
-        // if(angle > 180){
-        //     angle -= 360;
-        // }
-        if(BrainInertial.rotation() < 0){
-            convert = 1;
-        }
-        if ((BrainInertial.rotation() - angle) < ((BrainInertial.rotation()) + angle))
-        {
-            changer = -1;
+        if(angle >= 180){
+            angle = angle -360;
         }
         while (check)
         {
             // potential
-            error = angle - (convert * BrainInertial.rotation());
+            error = angle - BrainInertial.rotation();
             // integral
             cumerror += error;
             // derivative
             derivate_difference = error - prev_error;
             speed = kp * (error) + ki * cumerror + kd * derivate_difference;
-            left_.setVelocity(-1 * speed * changer, percent);
-            right_.setVelocity(speed * changer, percent);
+            left_.setVelocity(1 * speed, percent);
+            right_.setVelocity(-1 * speed, percent);
             prev_error = error;
-            if (timeout.time(sec) > 4.0)
+            if (timeout.time(sec) > 5.0)
             {
                 check = false;
             }
-            Brain.Screen.printAt(10, 50, "Rotation: %.1f", BrainInertial.rotation());
-            Brain.Screen.printAt(10, 70, "Target: %.1f", angle);
-            Brain.Screen.printAt(10, 90, "Error: %.1f", error);
         }
         left_.stop();
         right_.stop();
     }
     bool checkForPlant()
     {
-        if (DistanceSensor.objectDistance(mm) < 120)
+        if (DistanceSensor.objectDistance(mm) < 100)
         {
             return true;
         }
@@ -137,30 +126,37 @@ public:
             return false;
         }
     }
-    int moveToPlant()
+    void moveToPlant()
     {
         int colourVal = 0;
-        int distance_initial = 0;
+        float distance_initial = 0;
+        while(timeout.time(sec) < 5.0){
+            Brain.Screen.printAt(10, 50, "RUN: %.1f", DistanceSensor.objectDistance(mm));
+        }
         distance_initial = DistanceSensor.objectDistance(mm);
-        PIDmove(0.4, 0.000008, 0.01, distance_initial - 25);
-        if (ColourSensor.color() == orange)
-        {
-            colourVal = 1;
-        }
-        if (ColourSensor.color() == green)
-        {
-            colourVal = 2;
-        }
-        if (ColourSensor.color() == yellow)
-        {
-            colourVal = 3;
-        }
-        if (ColourSensor.color() == violet)
-        {
-            colourVal = 4;
-        }
-        PIDmove(0.4, 0.000008, 0.01, -distance_initial + 25);
-        return colourVal;
+        distance_initial =  distance_initial - 400.0;
+        Brain.Screen.printAt(10, 50, "final: %.1f", distance_initial);
+        wait(3,seconds);
+        PIDmove(distance_initial);
+        wait(3,seconds);
+        // if (ColourSensor.color() == orange)
+        // {
+        //     colourVal = 1;
+        // }
+        // else if (ColourSensor.color() == green)
+        // {
+        //     colourVal = 2;
+        // }
+        // else if (ColourSensor.color() == yellow)
+        // {
+        //     colourVal = 3;
+        // }
+        // else if (ColourSensor.color() == violet)
+        // {
+        //     colourVal = 4;
+        // }
+        // return colourVal;
+        // PIDmove(-304);
     }
     // void touchAndGo()
     // {
@@ -190,51 +186,107 @@ public:
     //     if (colour
     // }
 
-    // void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4], int posible_movement[][2])
-    // {
-    //     int cnt = 0;
-    //     int colour = 0;
-    //     int max_row_space = grid_rows;
-    //     int max_col_space = grid_cols;
-    //     if (current_x_pos > max_row_space || current_y_pos > max_col_space || current_x_pos < 0 || current_y_pos < 0 || visit_Array[current_x_pos][current_y_pos])
-    //     {
-    //     }
-    //     else
-    //     {
-    //         visit_Array[current_x_pos][current_y_pos] = true;
-    //         int directions_change[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-    //         for (int i = 0; i < 4; i++)
-    //         {
-    //             int new_pos_x = current_x_pos + directions_change[i][0];
-    //             int new_pos_y = current_y_pos + directions_change[i][1];
-    //             PIDturn(0.4, 0.000008, 0.01, 90 * i);
-    //             if (checkForPlant())
-    //             {
-    //                 colour = moveToPlant();
-    //                 grid[new_pos_x][new_pos_y] = colour;
-    //                 visit_Array[new_pos_x][new_pos_y] = true;
-    //             }
-    //             else
-    //             {
-    //                 if (new_pos_x < max_row_space && new_pos_y < max_col_space && new_pos_x > 0 && new_pos_y > 0 && !visit_Array[new_pos_x][new_pos_y])
-    //                 {
-    //                     posible_movement[cnt][0] = new_pos_x;
-    //                     posible_movement[cnt][1] = new_pos_y;
-    //                 }
-    //             }
-    //             cnt++;
-    //         }
-    //         for (int i = 0; i < cnt; i++)
-    //         {
-    //             if (posible_movement[i][0] != NULL)
-    //             {
-    //                 int next_cell_x = posible_movement[i][0];
-    //                 int next_cell_y = posible_movement[i][1];
-    //                 PIDturn(0.4, 0.000008, 0.01, 90 * i);
-    //                 PIDmove(0.4, 0.000008, 0.01, 100);
-    //                 dfs(grid, next_cell_x, next_cell_y,visit_Array,posible_movement);
-    //             }
-    //         }
-    //     }
-    // }
+    void dfs(int grid[][4], int& current_x_pos, int& current_y_pos, bool visit_Array[][4], int posible_movement[][2])
+    {
+        int cnt = 0;
+        int colour = 0;
+        int max_row_space = grid_rows;
+        int max_col_space = grid_cols;
+        if (current_x_pos > max_row_space || current_y_pos > max_col_space || current_x_pos < 0 || current_y_pos < 0 || visit_Array[current_x_pos][current_y_pos])
+        {
+        }
+        else
+        {
+            visit_Array[current_x_pos][current_y_pos] = true;
+            int directions_change[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+            for (int i = 0; i < 4; i++)
+            {
+                int new_pos_x = current_x_pos + directions_change[i][0];
+                int new_pos_y = current_y_pos + directions_change[i][1];
+                Brain.Screen.printAt(10, 50, "cnt: %.1f", i);
+                wait(1,seconds);
+                Brain.Screen.clearScreen();
+                PIDturn(90 * i);
+                if (checkForPlant())
+                {
+                    Brain.Screen.printAt(10, 70, "plant:");
+                    wait(1,seconds);
+                    Brain.Screen.clearScreen();
+                // Brain.Screen.printAt(10, 90, "Error: %.1f", error);
+                    // colour = moveToPlant();
+                    grid[new_pos_x][new_pos_y] = colour;
+                    visit_Array[new_pos_x][new_pos_y] = true;
+                }
+                else
+                {
+                    if (new_pos_x < max_row_space && new_pos_y < max_col_space && new_pos_x > 0 && new_pos_y > 0 && !visit_Array[new_pos_x][new_pos_y])
+                    {
+                        posible_movement[cnt][0] = new_pos_x;
+                        posible_movement[cnt][1] = new_pos_y;
+                    }
+                }
+                cnt++;
+            }
+            for (int i = 0; i < cnt; i++)
+            {
+                if (posible_movement[i][0] != 10)
+                {
+                    int next_cell_x = posible_movement[i][0];
+                    int next_cell_y = posible_movement[i][1];
+                    PIDturn(90 * i);
+                    PIDmove(100);
+                    dfs(grid, next_cell_x, next_cell_y,visit_Array,posible_movement);
+                }
+            }
+        }
+    }
 };
+
+// void PIDturn2(float angle, float kp = 0.4, float ki = 0.000026, float kd = 0.01)
+//     {
+//         float average_dist = 0;
+//         float derivate_difference;
+//         float cumerror = 0;
+//         bool check = true;
+//         float error;
+//         float speed;
+//         float prev_error = 0;
+//         timeout.reset();
+//         left_.spin(forward);
+//         right_.spin(forward);
+//         int changer = 1;
+//         int convert = 1;
+//         // if(angle > 180){
+//         //     angle -= 360;
+//         // }
+//         if(BrainInertial.rotation() < 0){
+//             convert = 1;
+//         }
+//         if ((BrainInertial.rotation() - angle) < ((BrainInertial.rotation()) + angle))
+//         {
+//             changer = -1;
+//         }
+//         while (check)
+//         {
+//             // potential
+//             error = angle - (convert * BrainInertial.rotation());
+//             // integral
+//             cumerror += error;
+//             // derivative
+//             derivate_difference = error - prev_error;
+//             speed = kp * (error) + ki * cumerror + kd * derivate_difference;
+//             left_.setVelocity(-1 * speed * changer, percent);
+//             right_.setVelocity(speed * changer, percent);
+//             prev_error = error;
+//             if (timeout.time(sec) > 4.0)
+//             {
+//                 check = false;
+//             }
+//             Brain.Screen.printAt(10, 50, "Rotation: %.1f", BrainInertial.rotation());
+//             Brain.Screen.printAt(10, 70, "Target: %.1f", angle);
+//             Brain.Screen.printAt(10, 90, "Error: %.1f", error);
+//         }
+//         left_.stop();
+//         right_.stop();
+//     }
+    
