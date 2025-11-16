@@ -27,7 +27,7 @@ public:
         BrainInertial.calibrate();
         ColourSensor.brightness(100);
     }
-    void setGrid(int x = 4, int y = 4)
+    void setGrid(int x = 3, int y = 3)
     {
         grid_rows = x;
         grid_cols = y;
@@ -198,7 +198,7 @@ public:
     //     if (colour
     // }
 
-    void dfs(int grid[][4], int current_x_pos, int current_y_pos, bool visit_Array[][4])
+    void dfs(int grid[][3], int current_x_pos, int current_y_pos, bool visit_Array[][3])
     {
         // Check if current position is out of bounds or already visited
         if (current_x_pos < 0 || current_x_pos >= grid_rows || current_y_pos < 0 || current_y_pos >= grid_cols || visit_Array[current_x_pos][current_y_pos])
@@ -305,13 +305,20 @@ public:
             dfs(grid, next_cell_x, next_cell_y, visit_Array);
             
             // Backtrack: turn around, move back, turn around again
+            Brain.Screen.clearScreen();
+            Brain.Screen.printAt(10, 50, "DEADEND %d:", cnt);
+            Brain.Screen.printAt(10, 70, "[%d][%d]", dx, dy);
+            wait(1,seconds);
+            Brain.Screen.clearScreen();
             PIDturn(90 * ((direction + 2) % 4)); // Turn 180 degrees
             wait(0.5, seconds);
-            PIDmove(100); // Move back
+            PIDmove(300); // Move back
             wait(0.5, seconds);
             PIDturn(90 * direction); // Face original direction
             wait(0.5, seconds);
         }
+        Brain.Screen.clearScreen();
+        Brain.Screen.printAt(10, 50, "DFS DONE!!!");
     }
 };
 
