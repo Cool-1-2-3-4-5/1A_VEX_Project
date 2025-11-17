@@ -214,33 +214,6 @@ public:
         while (TouchSensor.pressing())
         {}
     }
-    // void touchAndGo()
-    // {
-    //     while (!TouchSensor.pressing())
-    //     {
-    //     }
-    //     while (TouchSensor.pressing())
-    //     {
-    //     }
-    //     int distance_initial = 0;
-    //     int distance_final = 0;
-    //     int distance_togo = 0;
-    //     string color_ind = " ";
-    //     int colour_ind = 0;
-    //     distance_initial = DistanceSensor.objectDistance(mm);
-    //     Left_.setPosition(0, turns);
-    //     Left_.setVelocity(10, percent);
-    //     Right_.setVelocity(10, percent);
-    //     Left_.spin(forwards);
-    //     Right_.spin(forwards);
-    //     while (DistanceSensor(mm) < 30;
-    //     {}
-    //     Left_.stop();
-    //     Right_.stop();
-    //     distance_final = DistanceSensor.objectDistance(mm);
-    //     distance_togo = distance_initial - distance_final;
-    //     if (colour
-    // }
 
     void dfs(int grid[][3], int& current_x_pos, int& current_y_pos, bool visit_Array[][3])
     {
@@ -252,7 +225,6 @@ public:
         
         // Mark current position as visited
         visit_Array[current_x_pos][current_y_pos] = true;
-        
         // Define directions: Up, Right, Down, Left
         // [0][0] is top-left corner
         // Up: y-1, Right: x+1, Down: y+1, Left: x-1
@@ -364,58 +336,27 @@ public:
         Brain.Screen.clearScreen();
         Brain.Screen.printAt(10, 50, "DFS DONE!!!");
     }
+    void index_finder(int & x_pos, int & y_pos, int grid[][3], int colour_num){
+        for(int i = 0; i < grid_rows; i++){
+            for (int j = 0; j < grid_cols; j++){
+                if (grid[i][j] == colour_num){
+                    x_pos = i;
+                    y_pos = j;
+                }
+            }
+        }
+    }
+    void BFS(int grid[][3], int colour_x, int colour_y){
+        int distance_x = 0;
+        int distance_y = 0;
+        int lowest_value = 0;
+        distance_x = colour_x;
+        distance_y = colour_y;
+        lowest_value = distance_x + distance_y;
+        
+    }
+
 };
-
-// void PIDturn2(float angle, float kp = 0.4, float ki = 0.000026, float kd = 0.01)
-//     {
-//         float average_dist = 0;
-//         float derivate_difference;
-//         float cumerror = 0;
-//         bool check = true;
-//         float error;
-//         float speed;
-//         float prev_error = 0;
-//         timeout.reset();
-//         left_.spin(forward);
-//         right_.spin(forward);
-//         int changer = 1;
-//         int convert = 1;
-//         // if(angle > 180){
-//         //     angle -= 360;
-//         // }
-//         if(BrainInertial.rotation() < 0){
-//             convert = 1;
-//         }
-//         if ((BrainInertial.rotation() - angle) < ((BrainInertial.rotation()) + angle))
-//         {
-//             changer = -1;
-//         }
-//         while (check)
-//         {
-//             // potential
-//             error = angle - (convert * BrainInertial.rotation());
-//             // integral
-//             cumerror += error;
-//             // derivative
-//             derivate_difference = error - prev_error;
-//             speed = kp * (error) + ki * cumerror + kd * derivate_difference;
-//             left_.setVelocity(-1 * speed * changer, percent);
-//             right_.setVelocity(speed * changer, percent);
-//             prev_error = error;
-//             if (timeout.time(sec) > 4.0)
-//             {
-//                 check = false;
-//             }
-//             Brain.Screen.printAt(10, 50, "Rotation: %.1f", BrainInertial.rotation());
-//             Brain.Screen.printAt(10, 70, "Target: %.1f", angle);
-//             Brain.Screen.printAt(10, 90, "Error: %.1f", error);
-//         }
-//         left_.stop();
-//         right_.stop();
-//     }
-
-
-
 
 
 
