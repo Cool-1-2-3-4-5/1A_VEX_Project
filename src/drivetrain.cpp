@@ -1,11 +1,19 @@
 #include "drivetrain.hpp"
 Drivetrain::Drivetrain(char left_Port, char right_Port, char distanceSensor_port, char colourSensor_port, char touchSensor_port) : left_(left_Port, false), right_(right_Port, true), DistanceSensor(distanceSensor_port), ColourSensor(colourSensor_port), TouchSensor(touchSensor_port), PumpMotor(PORT11)
 {
+    BrainInertial.calibrate();
+    BrainInertial.setRotation(0, degrees);
+    BrainInertial.setHeading(0, degrees);
+    wait(3, seconds);
+    left_.setPosition(0, turns);
+    right_.setPosition(0, turns);
+    Brain.Screen.clearScreen();
+    Brain.Screen.setFont(mono15);
+    ColourSensor.setLight(ledState::on);
     left_.setStopping(brakeType::hold);
     right_.setStopping(brakeType::hold);
     left_.setVelocity(0, percent);
     right_.setVelocity(0, percent);
-    BrainInertial.calibrate();
     ColourSensor.brightness(100);
 }
 Drivetrain::~Drivetrain()
@@ -17,13 +25,7 @@ void Drivetrain::setGrid(int x, int y)
     grid_rows = x;
     grid_cols = y;
 }
-void Drivetrain::IMUcalibrate()
-{
-    BrainInertial.calibrate();
-    BrainInertial.setRotation(0, degrees);
-    BrainInertial.setHeading(0, degrees);
-    wait(3, seconds);
-}
+
 void Drivetrain::stop()
 {
     left_.stop();
@@ -131,26 +133,27 @@ int Drivetrain::moveToPlant()
         Brain.Screen.printAt(10, 50, "RUN: %.1f", DistanceSensor.objectDistance(mm));
     }
     distance_initial = DistanceSensor.objectDistance(mm);
-    distance_initial = distance_initial - 50.0;
+    distance_initial = distance_initial - 20.0;
     Brain.Screen.printAt(10, 50, "final: %.1f", distance_initial);
     timeout.reset();
     PIDmove(distance_initial);
-    if (ColourSensor.color() == cyan)
+    if (ColourSensor.hue() < 59 && ColourSensor.hue() > 35)
     {
-        colourVal = 1;
+        colourVal = 1; // yellow
     }
-    else if (ColourSensor.color() == green)
+    else if (ColourSensor.hue() < 120 && ColourSensor.hue() > 85)
     {
-        colourVal = 2;
+        colourVal = 2; // green
     }
-    else if (ColourSensor.color() == yellow)
+    else if (ColourSensor.hue() < 303 && ColourSensor.hue() > 279)
     {
-        colourVal = 3;
+        colourVal = 3; // purple
     }
-    else if (ColourSensor.color() == violet)
+    else if (ColourSensor.hue() > 340 || ColourSensor.hue() < 24)
     {
-        colourVal = 4;
+        colourVal = 4; // orange
     }
+    Brain.Screen.printAt(11, 51, "Colour: %.1f", colourVal);
     wait(1, seconds);
     PIDmove(-1 * distance_initial);
     wait(1, seconds);
