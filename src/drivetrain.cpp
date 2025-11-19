@@ -153,7 +153,7 @@ int Drivetrain::moveToPlant()
     {
         colourVal = 4; // orange
     }
-    Brain.Screen.printAt(11, 51, "Colour: %.1f", colourVal);
+    Brain.Screen.printAt(10, 80, "Colour: %.1f", colourVal);
     wait(1, seconds);
     PIDmove(-1 * distance_initial);
     wait(1, seconds);
