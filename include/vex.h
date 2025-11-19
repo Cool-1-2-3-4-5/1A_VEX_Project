@@ -9,4 +9,5 @@
 
 #include "iq2_cpp.h"
 #include "drivetrain.hpp"
+#include "pump.hpp"
 #endif
