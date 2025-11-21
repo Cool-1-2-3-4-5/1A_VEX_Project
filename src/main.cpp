@@ -89,12 +89,12 @@ int main()
             }
         }
         // reset
-
-        drive.index_finder(wanted_x, wanted_y, grid, color_to_find);
+        bool check = false;
+        drive.index_finder(check, wanted_x, wanted_y, grid, color_to_find);
         Brain.Screen.printAt(10, 50, "Found at [%d][%d]", wanted_x, wanted_y);
         wait(1, seconds);
         Brain.Screen.clearScreen();
-        if (wanted_x >= 0 && wanted_y >= 0 && wanted_x < 3 && wanted_y < 3)
+        if (wanted_x >= 0 && wanted_y >= 0 && wanted_x < 3 && wanted_y < 3 && check)
         {
             Brain.Screen.clearScreen();
             Brain.Screen.printAt(10, 30, "Searching color: %d", color_to_find);
@@ -205,8 +205,9 @@ int main()
 
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(10, 50, "All plants watered!");
+    Brain.Screen.printAt(10, 70, "Watered for a day!");
     wait(2, seconds);
-    
+    Brain.programStop();
 }
 // This PID constants are good
 // To see updates for the code MAKE SURE TO SAVE AND BUILD THE main.spp FILE

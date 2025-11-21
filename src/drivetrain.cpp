@@ -371,7 +371,7 @@ void Drivetrain::array_changer(int array1[][3], int array2[][3]){
     }
 }
 
-void Drivetrain::index_finder(int& x_pos, int& y_pos, int grid[][3], int colour_num)
+void Drivetrain::index_finder(bool& check, int& x_pos, int& y_pos, int grid[][3], int colour_num)
 {
     for (int i = 0; i < grid_rows; i++)
     {
@@ -381,6 +381,7 @@ void Drivetrain::index_finder(int& x_pos, int& y_pos, int grid[][3], int colour_
             {
                 x_pos = i;
                 y_pos = j;
+                check = true;
             }
         }
     }
