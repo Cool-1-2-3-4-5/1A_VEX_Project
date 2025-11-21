@@ -27,7 +27,7 @@ Drivetrain::Drivetrain(char left_Port, char right_Port, char distanceSensor_port
     BrainInertial.setHeading(0, degrees);
 
     Brain.Screen.clearScreen();
-    Brain.Screen.printAt(10, 50, "HH1!");
+    Brain.Screen.printAt(10, 50, "FINAL2!");
     wait(1, seconds);
     Brain.Screen.clearScreen();
 }
@@ -83,7 +83,7 @@ void Drivetrain::PIDmove(float distance, float kp, float ki, float kd)
         left_.setVelocity(speed, percent);
         right_.setVelocity(speed, percent);
         prev_error = error;
-        if (timeout.time(sec) > 3.0)
+        if (timeout.time(sec) > 3.5)
         {
             check = false;
         }
@@ -111,6 +111,7 @@ void Drivetrain::PIDturn(float angle, float kp, float ki, float kd)
     {
         // potential
         error = angle - BrainInertial.rotation();
+        Brain.Screen.printAt(10, 50, "angle: %.1f", error);
         // integral
         cumerror += error;
         // derivative
@@ -119,7 +120,7 @@ void Drivetrain::PIDturn(float angle, float kp, float ki, float kd)
         left_.setVelocity(1 * speed, percent);
         right_.setVelocity(-1 * speed, percent);
         prev_error = error;
-        if (timeout.time(sec) > 5.0)
+        if (timeout.time(sec) > 3.5)
         {
             check = false;
         }
@@ -130,7 +131,7 @@ void Drivetrain::PIDturn(float angle, float kp, float ki, float kd)
 bool Drivetrain::checkForPlant()
 {
     Brain.Screen.printAt(10, 50, "DisPlant: %.1f", DistanceSensor.objectDistance(mm));
-    wait(1, seconds);
+    wait(0.2, seconds);
     if (DistanceSensor.objectDistance(mm) < 200)
     {
         return true;
@@ -149,7 +150,7 @@ int Drivetrain::moveToPlant()
     timeout.reset();
 
     // Display distance for 5 seconds
-    while (timeout.time(sec) < 5.0)
+    while (timeout.time(sec) < 2.0)
     {
         Brain.Screen.clearScreen();
         Brain.Screen.printAt(10, 50, "Distance: %.1f mm", DistanceSensor.objectDistance(mm));
@@ -160,7 +161,7 @@ int Drivetrain::moveToPlant()
     distance_initial = distance_initial - 20.0;
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(10, 50, "Moving: %.1f mm", distance_initial);
-    wait(1, seconds);
+    wait(0.2, seconds);
 
     PIDmove(distance_initial);
 
@@ -168,7 +169,7 @@ int Drivetrain::moveToPlant()
     float hue = ColourSensor.hue();
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(10, 50, "Hue: %.1f", hue);
-    wait(1, seconds);
+    wait(0.2, seconds);
 
     if (hue >= 35 && hue <= 59)
     {
@@ -193,12 +194,21 @@ int Drivetrain::moveToPlant()
 
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(10, 80, "Colour: %d", colourVal);
-    wait(2, seconds);
+    wait(0.2, seconds);
 
     PIDmove(-1 * distance_initial);
-    wait(1, seconds);
+    wait(0.2, seconds);
     return colourVal;
 }
+void Drivetrain::WateringPosition(float &distance_initial)
+{
+    distance_initial = DistanceSensor.objectDistance(mm);
+    distance_initial = distance_initial - 30;
+    PIDmove(distance_initial);
+    //waterPlant(timeval);
+    wait (0.2, sec);
+}
+
 int Drivetrain::colourtotime(int colourValue)
 {
     int timetowater = 0;
@@ -254,7 +264,7 @@ void Drivetrain::dfs(int grid[][3], int &current_x_pos, int &current_y_pos, bool
         Brain.Screen.printAt(10, 30, "Checking dir %d", i);
         Brain.Screen.printAt(10, 50, "From [%d][%d]", current_x_pos, current_y_pos);
         Brain.Screen.printAt(10, 70, "To [%d][%d]", new_pos_x, new_pos_y);
-        wait(2, seconds);
+        wait(0.2, seconds);
 
         // Check if position is valid before turning and checking
         if (new_pos_x < 0 || new_pos_x >= grid_rows || new_pos_y < 0 || new_pos_y >= grid_cols)
@@ -262,7 +272,7 @@ void Drivetrain::dfs(int grid[][3], int &current_x_pos, int &current_y_pos, bool
             Brain.Screen.clearScreen();
             Brain.Screen.printAt(10, 50, "Out of bounds:");
             Brain.Screen.printAt(10, 70, "[%d][%d]", new_pos_x, new_pos_y);
-            wait(2, seconds);
+            wait(0.2, seconds);
             continue;  // Skip this direction
         }
 
@@ -271,13 +281,12 @@ void Drivetrain::dfs(int grid[][3], int &current_x_pos, int &current_y_pos, bool
             Brain.Screen.clearScreen();
             Brain.Screen.printAt(10, 50, "Already visited:");
             Brain.Screen.printAt(10, 70, "[%d][%d]", new_pos_x, new_pos_y);
-            wait(2, seconds);
+            wait(0.2, seconds);
             continue;  // Skip this direction
         }
 
         // Turn to face direction i (0=up, 1=right, 2=down, 3=left)
         PIDturn(90 * i);
-        wait(0.5, seconds);
 
         // Check if there's a plant in this direction
         if (checkForPlant())
@@ -291,7 +300,7 @@ void Drivetrain::dfs(int grid[][3], int &current_x_pos, int &current_y_pos, bool
                 grid[new_pos_x][new_pos_y] = colour;
                 visit_Array[new_pos_x][new_pos_y] = true;
                 Brain.Screen.printAt(10, 70, "Plant at [%d][%d]: %d", new_pos_x, new_pos_y, colour);
-                wait(1, seconds);
+                wait(0.2, seconds);
                 Brain.Screen.clearScreen();
             }
         }
@@ -303,7 +312,7 @@ void Drivetrain::dfs(int grid[][3], int &current_x_pos, int &current_y_pos, bool
             Brain.Screen.clearScreen();
             Brain.Screen.printAt(10, 50, "Possible move %d:", cnt);
             Brain.Screen.printAt(10, 70, "[%d][%d]", new_pos_x, new_pos_y);
-            wait(2, seconds);
+            wait(0.2, seconds);
             cnt++;
         }
     }
@@ -329,9 +338,9 @@ void Drivetrain::dfs(int grid[][3], int &current_x_pos, int &current_y_pos, bool
 
         // Turn to face the direction and move to next cell
         PIDturn(90 * direction);
-        wait(0.5, seconds);
-        PIDmove(400); // Move 100mm to next cell
-        wait(0.5, seconds);
+        wait(0.1, seconds);
+        PIDmove(325); // Move 100mm to next cell
+        wait(0.1, seconds);
 
         // Recursively explore from new position
         dfs(grid, next_cell_x, next_cell_y, visit_Array);
@@ -340,20 +349,29 @@ void Drivetrain::dfs(int grid[][3], int &current_x_pos, int &current_y_pos, bool
         Brain.Screen.clearScreen();
         Brain.Screen.printAt(10, 50, "DEADEND %d:", cnt);
         Brain.Screen.printAt(10, 70, "[%d][%d]", dx, dy);
-        wait(1, seconds);
+        wait(0.1, seconds);
         Brain.Screen.clearScreen();
         PIDturn(90 * ((direction + 2) % 4)); // Turn 180 degrees
-        wait(0.5, seconds);
-        PIDmove(300); // Move back
-        wait(0.5, seconds);
+        wait(0.1, seconds);
+        PIDmove(325); // Move back
+        wait(0.1, seconds);
         PIDturn(90 * direction); // Face original direction
-        wait(0.5, seconds);
+        wait(0.1, seconds);
     }
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(10, 50, "DFS DONE!!!");
 }
 
-void Drivetrain::index_finder(int &x_pos, int &y_pos, int grid[][3], int colour_num)
+
+void Drivetrain::array_changer(int array1[][3], int array2[][3]){
+    for(int i = 0; i < grid_rows; i++){
+        for(int j = 0; j < grid_cols; j++){
+            array2[i][j] = array1[j][i];
+        }
+    }
+}
+
+void Drivetrain::index_finder(int& x_pos, int& y_pos, int grid[][3], int colour_num)
 {
     for (int i = 0; i < grid_rows; i++)
     {
@@ -381,7 +399,7 @@ void Drivetrain::mapping(int grid[][3], int &numcnt, bool &finalcheck, int &x_po
         {
             x_pos += direction[i][0];
             y_pos += direction[i][1];
-            if (x_pos < 0 || y_pos < 0 || x_pos >= grid_rows || y_pos >= grid_cols || verify[x_pos][y_pos])
+            if (x_pos < 0 || y_pos < 0 || x_pos > (grid_rows-1) || y_pos > (grid_cols-1) || verify[x_pos][y_pos])
             {
                 // out of bounds or already visited
             }
@@ -485,31 +503,40 @@ void Drivetrain::mapping(int grid[][3], int &numcnt, bool &finalcheck, int &x_po
 
 void Drivetrain::GoToPos(int coming[], int finalcnt)
 {
-    for (int i = 0; i < finalcnt - 1; i++)
+    float distanceToPos = 0;
+    for (int i = 0; i < (finalcnt-1); i++)
     {
+        Brain.Screen.clearScreen();
+        Brain.Screen.printAt(10, 30, "Move %d: Dir %d", i, coming[i]);
+        Brain.Screen.printAt(10, 50, "Before: %.1f deg", BrainInertial.rotation());
+        wait(0.2, seconds);
+        
         if (coming[i] == 1)
         {
             PIDturn(90);
-            PIDmove(100);
         }
         else if (coming[i] == 2)
         {
             PIDturn(270);
-            PIDmove(100);
         }
         else if (coming[i] == 3)
         {
             PIDturn(180);
-            PIDmove(100);
         }
         else
         {
             PIDturn(0);
-            PIDmove(100);
         }
+        
+        Brain.Screen.printAt(10, 70, "After: %.1f deg", BrainInertial.rotation());
+        wait(0.2, seconds);
+        PIDmove(340);
     }
+    
+    Brain.Screen.printAt(10, 50, "PLANT!!!");
+    wait(0.2, seconds);
     // Final turn to face the plant
-    if (coming[finalcnt - 1] == 1)
+    if (coming[finalcnt-1] == 1)
     {
         PIDturn(90);
     }
@@ -525,10 +552,41 @@ void Drivetrain::GoToPos(int coming[], int finalcnt)
     {
         PIDturn(0);
     }
-    Brain.Screen.clearScreen();
-    Brain.Screen.printAt(10, 50, "PLANT!!!");
-    wait(1, seconds);
+    // WateringPosition(distanceToPos);
+    // Brain.Screen.clearScreen();
+    // return distanceToPos;
 }
+
+void Drivetrain::comeHome(int coming[], int finalcnt)
+{
+    for (int i = 1; i < (finalcnt); i++)
+    {
+        if (coming[i] == 1)
+        {
+            PIDturn(90);
+        }
+        else if (coming[i] == 2)
+        {
+            PIDturn(270);
+        }
+        else if (coming[i] == 3)
+        {
+            PIDturn(180);
+        }
+        else
+        {
+            PIDturn(0);
+        }
+        PIDmove(340);
+    }
+    wait(0.2,sec);
+    PIDturn(0);
+    // Final turn to face the plant
+    Brain.Screen.clearScreen();
+    Brain.Screen.printAt(10, 50, "Home!!!");
+    wait(0.2, seconds);
+}
+
 
 // void Drivetrain::displayHue()
 // {
