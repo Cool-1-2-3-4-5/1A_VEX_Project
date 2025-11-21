@@ -11,9 +11,8 @@ private:
     inertial BrainInertial;
     brain Brain;
     distance DistanceSensor;
-    colorsensor ColourSensor;
+    optical ColourSensor;
     touchled TouchSensor;
-    motor PumpMotor;
     timer timeout;
     int grid_rows;
     int grid_cols;
@@ -34,7 +33,9 @@ public:
     void touchandgo();
     void dfs(int grid[][3], int &current_x_pos, int &current_y_pos, bool visit_Array[][3]);
     void index_finder(int &x_pos, int &y_pos, int grid[][3], int colour_num);
-    void BFS(int grid[][3], int colour_x, int colour_y);
+    void mapping(int grid[][3], int &numcnt, bool &finalcheck, int &x_pos, int &y_pos, int &new_x, int &new_y, bool verify[][3], int &verifycnt, int cur_x, int cur_y, int movement[], int dead[], int wanted_x, int wanted_y);
+    void GoToPos(int path[], int finalcnt);
+    void displayHue();
 };
 
 /*
