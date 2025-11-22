@@ -71,14 +71,9 @@ int main()
                 verify[i][j] = false;
             }
         }
-<<<<<<< HEAD
-
         drive.index_finder(wanted_x, wanted_y, grid, color_to_find);
-=======
         // reset
         bool check = false;
-        drive.index_finder(check, wanted_x, wanted_y, grid, color_to_find);
->>>>>>> 7540b9b3d5af568e8d9ff4c877c87015665d927b
         Brain.Screen.printAt(10, 50, "Found at [%d][%d]", wanted_x, wanted_y);
         wait(1, seconds);
         Brain.Screen.clearScreen();
@@ -189,20 +184,7 @@ int main()
     }
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(10, 50, "All plants watered!");
-<<<<<<< HEAD
     Brain.Screen.printAt(10, 50, "for today!");
     wait(2, seconds);
     Brain.programStop();   
 }
-=======
-    Brain.Screen.printAt(10, 70, "Watered for a day!");
-    wait(2, seconds);
-    Brain.programStop();
-}
-// This PID constants are good
-// To see updates for the code MAKE SURE TO SAVE AND BUILD THE main.spp FILE
-// drive.PIDmove(0.4, 0.000008, 0.01, 200);
-
-/*
-*/
->>>>>>> 7540b9b3d5af568e8d9ff4c877c87015665d927b

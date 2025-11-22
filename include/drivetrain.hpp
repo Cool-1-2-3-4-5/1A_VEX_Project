@@ -33,7 +33,7 @@ public:
     void move();
     void touchandgo();
     void dfs(int grid[][3], int &current_x_pos, int &current_y_pos, bool visit_Array[][3]);
-    void index_finder(bool& check, int& x_pos, int& y_pos, int grid[][3], int colour_num);
+    void index_finder(int& x_pos, int& y_pos, int grid[][3], int colour_num);
     void mapping(int grid[][3], int &numcnt, bool &finalcheck, int &x_pos, int &y_pos, int &new_x, int &new_y, bool verify[][3], int &verifycnt, int cur_x, int cur_y, int movement[], int dead[], int wanted_x, int wanted_y);
     void GoToPos(int path[], int finalcnt);
     void comeHome(int path[], int finalcnt);
