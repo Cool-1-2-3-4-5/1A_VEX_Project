@@ -4,39 +4,23 @@ brain Brain;
 
 int main()
 {
-    // // Initialize grid for DFS
     Drivetrain drive(PORT7, PORT12, PORT1, PORT6, PORT9);
     Pump PumpMotor(PORT10);
-    // drive.PIDmove(360, 0.4, 0.0000043, 0.02);
-    // drive.PIDturn(90, 0.4, 0.000005, 0.01);
+    
     drive.setGrid(3, 3);
-    // int grid[3][3] = {{0, 0, 3}, {0, 0, 0}, {4, 1, 2}};
-    int old_grid[3][3] = {0};
-    int grid[3][3] = {0};
-    bool visit_Array[3][3] = {false};
+    int old_grid[3][3] = {};
+    int grid[3][3] = {};
+    bool visit_Array[3][3] = {};
     int current_x = 0;
     int current_y = 0;
     drive.touchandgo();
-    // Run DFS to map the grid
     drive.dfs(old_grid, current_x, current_y, visit_Array);
     drive.array_changer(old_grid,grid);
-
-
     Brain.Screen.clearScreen();
-    for(int i =0; i< 3; i++){
-        for(int j = 0; j< 3; j++){
-            Brain.Screen.printAt(10, 50, "Grid [%d][%d]", i,j);
-            Brain.Screen.printAt(10, 50, "val: %d", grid[i][j]);
-            wait(2.5, seconds);
-            Brain.Screen.clearScreen();
-        }
-    }
-    // drive.PIDturn(0);
     wait(2, seconds);
 
-    // Mapping variables
     bool finalcheck = true;
-    bool verify[3][3] = {false};
+    bool verify[3][3] = {};
     int movement[50] = {0};
     int dead[50] = {0};
     int going[50] = {0};
@@ -54,17 +38,16 @@ int main()
     int secondcnt = 0;
     int finalcnt = 0;
     int r = 0;
-    float distanceBack = 0;
+    int water_time = 0;
+    int plant_color = 0;
     for (int i = 0; i < 50; i++)
     {
         movement[i] = 0;
         dead[i] = 0;
     }
 
-    // Loop through all plant colors: 1=yellow, 2=green, 3=purple, 4=orange/red
     for (int color_to_find = 1; color_to_find <= 4; color_to_find++)
     {
-        // Reset state variables for each plant
         finalcheck = true;
         numcnt = 0;
         x_pos = 0;
@@ -88,7 +71,6 @@ int main()
                 verify[i][j] = false;
             }
         }
-        // reset
 
         drive.index_finder(wanted_x, wanted_y, grid, color_to_find);
         Brain.Screen.printAt(10, 50, "Found at [%d][%d]", wanted_x, wanted_y);
@@ -112,10 +94,8 @@ int main()
                     r++;
                 }
             }
-
             while (movement[secondcnt - 1] != 0)
             {
-                Brain.Screen.printAt(10, 70 + secondcnt * 15, "Move: %d", movement[secondcnt - 1]);
                 secondcnt++;
             }
             secondcnt--;
@@ -139,22 +119,21 @@ int main()
             {
                 int direction = going[i];
 
-                // Flip the direction: 1<->2, 3<->4
                 if (direction == 1)
                 {
-                    coming[index] = 2; // right -> left
+                    coming[index] = 2; // right --> left
                 }
                 else if (direction == 2)
                 {
-                    coming[index] = 1; // left -> right
+                    coming[index] = 1; // left --> right
                 }
                 else if (direction == 3)
                 {
-                    coming[index] = 4; // down -> up
+                    coming[index] = 4; // down --> up
                 }
                 else if (direction == 4)
                 {
-                    coming[index] = 3; // up -> down
+                    coming[index] = 3; // up --> down
                 }
                 else
                 {
@@ -180,12 +159,12 @@ int main()
             drive.GoToPos(going, finalcnt);
             
             // Water the plant
-            int plant_color = grid[wanted_x][wanted_y];
-            int water_time = drive.colourtotime(plant_color);
+            plant_color = grid[wanted_x][wanted_y];
+            water_time = drive.colourtotime(plant_color);
             Brain.Screen.clearScreen();
             Brain.Screen.printAt(10, 50, "Watering plant...");
             Brain.Screen.printAt(10, 70, "Color: %d Time: %d", plant_color, water_time);
-            PumpMotor.PourWater(color_to_find);
+            PumpMotor.PourWater(water_time);
             wait(1, seconds);
 
             // Return home
@@ -198,19 +177,13 @@ int main()
         else
         {
             Brain.Screen.clearScreen();
-            Brain.Screen.printAt(10, 50, "Color %d not Foun!", color_to_find);
+            Brain.Screen.printAt(10, 50, "Color %d not Found!", color_to_find);
             wait(1, seconds);
         }
     }
-
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(10, 50, "All plants watered!");
+    Brain.Screen.printAt(10, 50, "for today!");
     wait(2, seconds);
-    
+    Brain.programStop();   
 }
-// This PID constants are good
-// To see updates for the code MAKE SURE TO SAVE AND BUILD THE main.spp FILE
-// drive.PIDmove(0.4, 0.000008, 0.01, 200);
-
-/*
-*/

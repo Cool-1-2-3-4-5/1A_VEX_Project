@@ -1,7 +1,7 @@
 #include "pump.hpp"
 Pump::Pump(char PumpMotor_port) : PumpMotor(PumpMotor_port, false)
 {
-    Brain.Screen.printAt(10, 50, "pumpggu!");
+    Brain.Screen.printAt(10, 50, "Pump Initialized!");
     wait(1, seconds);
     PumpMotor.setStopping(brakeType::hold);
     PumpMotor.setVelocity(0, percent);
@@ -23,7 +23,7 @@ void Pump::PourWater(int seconds)
     {
     }
     stop();
-    Brain.Screen.printAt(10, 50, "Wat done!");
+    Brain.Screen.printAt(10, 50, "Watered!");
     wait(1,sec);
     Brain.Screen.clearScreen();
 }
