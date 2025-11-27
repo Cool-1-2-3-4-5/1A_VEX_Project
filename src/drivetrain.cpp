@@ -585,12 +585,3 @@ void Drivetrain::comeHome(int coming[], int finalcnt)
     wait(0.2, sec);
     PIDturn(0);
 }
-
-// void Drivetrain::displayHue()
-// {
-//     ColourSensor.setLight(ledState::on);
-//     ColourSensor.brightness(100);
-//     float hue = ColourSensor.hue();
-//     Brain.Screen.clearScreen();
-//     Brain.Screen.printAt(10, 50, "Hue: %.1f", hue);
-// }
